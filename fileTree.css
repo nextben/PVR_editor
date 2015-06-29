@@ -1,0 +1,18 @@
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);     
+
+#tree {display:inline-block;}
+/*#tree div{display:block;}*/
+#tree td{vertical-align:middle; height:26px; background-color:white; border-radius:5px; cursor:default;}
+#tree td div{float:left;}
+#tree td.hovered{background-color:#E4E9F0}
+
+#tree td.clicked{background-color:#BCD5F0;}
+#tree td{border:2px solid white; }
+table#tree {border-spacing:0px; font-family:"nanumgothic"; font-size:14px;}
+#tree .content, #tree .extendButton{padding:2px 0px;}
+
+#tree .extendButton{float:left; width:20px; visibility:hidden; text-align:center}
+#tree td.hovered .extendButton{visibility:visible;}
+#tree td.centerhovered{border-color:black;}
+#tree td.dropTop {border-top-color:black;}
+#tree td.dropBottom {border-bottom-color:black;}

@@ -1,0 +1,14 @@
+# Single Pano Skin
+# - krpano Default Buttons
+# - QTVR/Drag Mouse Cursor
+# - Context Menu with Different Projections
+# - Special Android Skin with Zoom and Fullscreen Buttons
+# krpano 1.0.8.15
+
+xmltemplate=xml/default.xml
+xmltemplate_additional_file=xml/skin/defaultskin.xml
+xmltemplate_additional_file=xml/skin/buttons.png
+xmltemplate_additional_file=xml/skin/qtvr-cursors.png
+xmltemplate_additional_file=xml/skin/drag-cursors.png
+xmltemplate_additional_file=xml/skin/androidskin.xml
+xmltemplate_additional_file=xml/skin/androidbuttons.png

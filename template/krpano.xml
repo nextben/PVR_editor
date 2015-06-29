@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<krpano version="1.16" showerrors="false">
+	<include url="%SWFPATH%/skin/vtourskin.xml"/>
+	<action name="draghotspot">
+		if(%1 != dragging,
+			spheretoscreen(hotspot[%2].ath, hotspot[%2].atv, hotspotcenterx, hotspotcentery);
+			sub(drag_adjustx, mouse.stagex, hotspotcenterx); 
+			sub(drag_adjusty, mouse.stagey, hotspotcentery); 
+			draghotspot(dragging, %2);
+		,
+			if(hotspot[%2].pressed,
+				sub(dx, mouse.stagex, drag_adjustx);
+				sub(dy, mouse.stagey, drag_adjusty);
+				screentosphere(dx, dy, hotspot[%2].ath, hotspot[%2].atv);
+				delayedcall(0, draghotspot(dragging, %2) );
+			);
+		)
+	</action>
+	<image type="CUBE" multires="true" tilesize="512" progressive="true">
+		<level tiledimagewidth="10" tiledimageheight="10">
+			<cube url="%HTMLPATH%/source/blank.png"/>
+		</level>
+	</image>
+</krpano>

@@ -1,0 +1,11 @@
+<krpano version="1.0.8.15"[PARTIALPANO]>
+	
+	<include url="skin/defaultskin.xml" />
+	
+	<view hlookat="0" vlookat="0" maxpixelzoom="1.0" [VIEWLIMITS]/>
+
+	[PREVIEW]
+
+	[IMAGE]
+
+</krpano>

@@ -1,0 +1,1956 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta Http-Equiv="Cache-Control" Content="no-cache">
+    <meta Http-Equiv="Pragma" Content="no-cache">
+    <meta Http-Equiv="Expires" Content="0">
+    <meta Http-Equiv="Pragma-directive: no-cache">
+    <meta Http-Equiv="Cache-directive: no-cache">
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>    
+    <script src="http://malsup.github.com/jquery.form.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+    
+    <script src="fileTree.js"></script>
+    <script src="marker.js"></script>
+    <script src="view.js"></script>
+    <script src="tileLayer.js"></script>
+    <script src="icon.js"></script>
+    <script src="map.js"></script>
+    <script src="pvrPlayer.js"></script>
+    <script src="embedpano.js"></script>
+
+    <link rel="stylesheet" href="fileTree.css" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css" />
+
+    <style>
+      @import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+      html {height:100%;}
+
+      body {margin:0; font-family:nanumgothic; 
+        display:inline-flex; flex-direction:column; -ms-flex-direction:column;
+        display:-ms-inline-flexbox;
+        min-width:950px; width:100%; height:100%; min-height:300px;
+      }
+
+      #bodyContainer {width:100%; flex:1; -ms-flex:1; float:left;
+        display:flex;display:-ms-flexbox; 
+      }
+
+      #pvrMenuContainer {width:209px; border-right: 1px solid #D3D4CF;
+        display:flex;display:-ms-flexbox; flex-direction:column; -ms-flex-direction:column;
+      }
+      #vtourNameArea {
+        height: 29px; padding: 5px;
+        border-bottom: 1px solid #D3D4CF;
+        text-align:center; font-size:25px; font-weight:bold;        
+      }
+      #vtourNameArea.withInput {font-size:auto;}
+      #nodePropertyContainer {width:209px; height:99px; border-bottom: 1px solid #D3D4CF;}
+      #nodePropertyContainer .button {width:55px; padding:5px 0px; margin-left:5px;
+        background-color:#19BE9C; color:white;
+        float:left; 
+        font-size:12px; font-weight:bold; text-align:center;
+        cursor:pointer;}
+
+
+      #pvrMenu {width:189px; flex:1; -ms-flex:1; float:left; padding:10px; overflow-y:auto; position:relative; overflow-x:hidden;}
+      #pvrMenu::-webkit-scrollbar{width:5px; background-color:rgba(0,0,0,0);}
+      #pvrMenu::-webkit-scrollbar-thumb{width:5px; background-color:#B2B7BA;border-radius:2px;}
+
+      .pvrBox.first {margin:0;}
+      .pvrBox.first img {
+        width:176px;
+        height:101px;
+        border:2px solid #D5D5D5;
+      }
+      .pvrBox {margin-top:10px; width:179px; height:105px; padding:5px; 
+        cursor:pointer; float:left;}
+      .pvrBox.clicked {background-color:#D5D5D5;}
+
+      #pvrProperty {
+        height:189px; width:225px;
+        position:absolute; 
+        left:210px;
+        z-index:1000010
+      }
+      #pvrPropertyArea {
+        width:209px; height:188px;
+        border-right:1px solid #D3D4CF;
+        border-bottom:1px solid #D3D4CF;
+        border-top:1px solid #D3D4CF;
+        background-color: white; position:absolute;
+        float:left;
+      }
+      #propertyToggleButton {
+        background-color: white;
+        position:relative;
+        height:88px; width:14px;
+        left:210px; top:50px; 
+        border:0px; border-radius:0px;
+        border-right:1px solid #D3D4CF; 
+        border-top:1px solid #D3D4CF;
+        border-bottom:1px solid #D3D4CF;
+        border-bottom-right-radius: 10px;
+        border-top-right-radius: 10px;
+        cursor:pointer;
+      }
+
+
+
+      #myKrpano>div>div:nth-child(1), #myKrpano>div>div:nth-child(2) {z-index:1000000;}
+
+
+      .positioner {flex: 1; -ms-flex:1; position:relative;}
+      #map {height:100%; width:100%; position:absolute;}
+      #pvrContainer {position:absolute; height:100%; width:100%;}
+      #bottomBar {width:100%;height:0px;}
+      
+      
+      
+      #markerProperty {position:absolute; width:225px; height:500px; z-index:4000;}
+      #mapContainer {width:100%; height:100%; float:left;}
+      #mapSearch {position:absolute; bottom:10px; width:100%; height:30px; float:left;display:flex;display:-ms-flexbox;}
+      #mapSearch div{text-align:center;}
+      #mapSearch .button {width:55px; height:19px; text-align:center; background-color:#19BE9C;
+        font-size:14px; font-weight:bold; color:white;padding:3px; cursor:pointer;display:inline-block;
+        margin-left:auto; margin-right:auto;}
+      #mapSearch div.first{width:80px;padding:5px 0px;}
+      #mapSearch div.second{flex:1; -ms-flex:1; padding:4px 0px;}
+      #mapSearch input{width:95%; margin:0;}
+      #mapSearch div.third{width:70px;padding:2px 0px;}
+
+     
+      #markerIconArea {position:absolute; right:0; z-index:5000;}
+      #markerPropertyArea {
+        width:209px; height:209px; 
+        border-right:1px solid #D3D4CF;
+        border-bottom:1px solid #D3D4CF;
+        background-color: white; position:absolute;
+        float:left;
+      }
+
+      
+
+      
+
+      #markerPropertyArea{
+        position:auto;
+      }
+      
+
+      #markerPropertyToggleButton {
+        background-color: white;
+        position:relative;
+        height:88px; width:14px;
+        left:210px; top:60px;
+        border:0px; border-radius:0px;
+        border-right:1px solid #D3D4CF; 
+        border-top:1px solid #D3D4CF;
+        border-bottom:1px solid #D3D4CF;
+        border-bottom-right-radius: 10px;
+        border-top-right-radius: 10px;
+        cursor:pointer;
+        float:left;
+      }
+
+      #menuBar {background-color: #E9EDEE}
+      .menuButton {width:150px;color:white;background-color:#34495E;text-align: center; padding:15px;font-weight:bold; font-size:15px; line-height:1; cursor:pointer; margin-right:10px;float:left;}
+      /*#menuBar .button {width:100px; padding:5px 0px; margin-right:10px; margin-top:7px;
+        background-color:#BDBDBD; color:white; float:right;
+        font-size:14px; font-weight:bold; text-align:center;
+        cursor:pointer; border-radius:3px; cursor:pointer;}*/
+
+      #menuBar .small.button {width:55px; padding:5px 0px; margin-right:10px; margin-top:8px;
+        background-color:#19BE9C; color:white;
+        float:left; 
+        font-size:12px; font-weight:bold; text-align:center;
+        cursor:pointer;}
+      .bottomShadow0 {box-shadow: 0px 10px 5px -5px #D5D5D5 inset; position:relative; height:10px; z-index:1000001; top:40px;}
+
+
+      .menuSelect {float:left; margin:0; margin-top:10px; margin-right:10px;}
+
+      #topContainer {width:100%;height:60px;float:left;background-color:#EEEFF1;}
+      
+      #leftContainer {display:inline-block;height:100%;float:left;}
+     
+      .bottomShadow {box-shadow: 0px 10px 5px -5px #D5D5D5 inset; position:relative; top:60px; height:10px; z-index:4001;}
+      
+      #projectNameArea {width:150px; margin:20px; font-size:17px; font-weight:900; float:left;}
+      #pathArea {padding:22px; font-size:14px; font-weight:900; float:left;}
+      #versionArea {width:200px; padding:23px; font-size:12px; float:left;}
+      #topButtonArea {padding:13px 10px; float:right;}
+      #topButtonArea .button {width:100px; text-align:center; padding:10px 0px; font-size:12px; 
+        border-radius:4px;background-color:#B2B7BA; margin-left:10px; color:white; float:left; font-weight:bold;
+        cursor:pointer;} 
+      #fileTreeArea {float:left; width:179px; border-right:1px solid #D3D4CF; padding:10px;overflow-y:auto;}
+     
+      .iconArea {float:left; width:59px; border-right:1px solid #D3D4CF; padding:10px; background-color:#F6FCFC; overflow-y:auto;}
+      
+      .myFileIcon {float:left; margin:0px 2px;}
+
+      .iconImage {}
+      .iconBox {
+        padding:2px; border-radius:10px; 
+        cursor:pointer; display:inline-block; margin-top:10px; text-align:center; float:left;
+        background-color: rgba(0,0,0,0);
+        width:55px; height:55px; 
+      }
+      .iconBox.clicked {background-color: #D5D5D5;}
+      .iconBox.clicked.hiddenClicked {background-color: rgba(0,0,0,0);}
+      .iconBox.first{margin-top: 0;}
+
+
+      #propertyArea {float:left; border-right:1px solid #D3D4CF; height:500px;}
+      .propertyElement {font-size:14px;display:inline-block;}
+      .propertyName {background-color:#CEE3E4; font-weight:bold;padding-left:5px;}
+      .propertyElement input[name|=name] {width:195px;margin:0;text-align:left;}
+      .propertyElement input[type|=file], .propertyElement select
+        {width:199px;}
+      .propertyElement input, .propertyElement select {font-size:14px; font-family:"nanumgothic"; text-align:center;} 
+      .propertyWidth {width:209px;}
+      .propertyElement>.propertyWidth {width:199px;padding:5px;}
+      .propertyElement input.small {width:40px;}
+      .propertyElement .radioBox {width:99px; float:left; margin-right:1px;margin-bottom:5px;}
+      .propertyElement .radioBox.last {margin-right:0;} 
+      .propertyContents {display:inline-block; float:left;text-align:center;}
+
+      .radioBox {text-align:left;}
+      .leaflet-container {background-color: white}
+
+
+      .buttonBox {display:inline-block; float:right; padding:5px;}
+      #pvrPropertyArea .button, #markerPropertyArea .button {width:55px; padding:5px 0px; margin-left:5px;
+        background-color:#19BE9C; color:white;
+        float:left; 
+        font-size:12px; font-weight:bold; text-align:center;
+        cursor:pointer;}
+      #pvrPropertyArea .button.wide {width:199px;}
+      #pvrPropertyArea .button.first {margin:0; margin-bottom:5px;}
+
+      
+
+
+      #rightContainer {flex:1; -ms-flex:1; float:left;}
+      .mainContents {width:100%; height:100%;}
+      .bodyHeight {height:500px;}
+      .bodyWithPadding {height:480px; padding-top:10px; padding-bottom:10px;}
+
+      #anchor.forMarker {position:relative; float:right;}
+      #iconPropArea {
+        position:absolute; top: 90px; left: 490px; z-index: 4000; 
+        background-color:white; 
+        border-right:1px solid #D3D4CF;
+      }
+      .propTextareaWidth {width:193px; margin:0;float:left;}
+      .fixSize {resize:none;}
+
+      
+      .pvrNameArea {
+        width:90%;
+        height:20px;
+        float:left;
+      }
+      .nodeDeleteButton {width:10%;float:left;font-weight:bold;}
+
+      .pvrPictureArea {
+        width:100%;
+        height:85px;
+        float:left;
+      }
+
+      .pvrPictureArea img{
+        height:100%;
+        width:100%;
+      }
+
+      .hidden {display:none;}
+
+      .loadingContainer {width:100%; height:100%; position:fixed; top:0; left:0;
+                        background-color:rgba(0,0,0,0.7); z-index:1000030; cursor:wait;}
+      .loadingProgress {position:relative; float:left; display:inline-block;
+                        top:50%; left:50%; margin-top:-6px; margin-left:-104px;}
+      .loadingProgress img {float:left;}
+
+
+
+
+      .popupBackground {width:100%; height:100%; position:fixed; top:0; left:0;
+                        background-color:rgba(0,0,0,0.7); z-index:1000030;}
+      .popup {position:relative; float:left; display:inline-block;
+              width:300px; height:100px; background-color:white;
+              top:50%; left:50%; margin-top:-50px; margin-left:-125px;}
+      .popup.area {padding-top:20px;}
+      .popup.round {border-radius: 10px}
+
+      .popup textarea {margin:0; resize:;}
+
+      .rightAlign {float:right;}
+      .area {display:inline-block; padding:10px; line-height:0;}
+      .area .button {
+        display: inline-block;
+        font-weight:bold; 
+        padding:5px; background-color:#BDBDBD;
+        text-align:center;
+        color:white;
+        cursor:pointer;
+      }
+
+      .area.fullWidth {padding-left:0; padding-right:0;}
+      .fullWidth {width:100%; -webkit-box-sizing: border-box; box-sizing:border-box;}
+      .button.width4 {width:100px;}
+      .button.height1 {
+        height:15px; padding-top:5px; padding-bottom:5px;
+        font-size:15px; line-height:1;
+      }
+      .button.active {
+        background-color: #8C8C8C; cursor:default;
+      }
+      .menuBar1 {width:100%;height:45px;position:relative;}
+      .menuBar1 .barShadow {box-shadow: 0px 10px 5px -5px #D5D5D5 inset; position:absolute; top:45px; height:10px; z-index:1000001; width:100%; pointer-events:none;}
+
+      .button.round {border-radius:5px;}
+
+      .button.closeButton {line-height:1; display:inline-block;
+        background-color:white;color:black; 
+        cursor:pointer; position:absolute; top:5px; right:10px;
+        padding:0;
+      }
+      .button.closeButton:hover {color:red;}
+
+      .radioBox {font-size:13px;}
+      .radioBox input[type|="radio"] {margin:0; vertical-align:text-bottom;}
+    </style>
+  </head>
+  <body>
+    <div id="menuBar" class="menuBar1">
+      <div class="menuButton" id="menuNewProButton">새 프로젝트</div>
+      <div class="menuButton" id="menuLoadProButton">프로젝트 불러오기</div>
+      <div class="menuButton" id="menuDeleteProButton">프로젝트 삭제</div>
+
+      <div class="area rightAlign">
+        <div id="moveToViewPageButton" class="button width4 height1 round">보기화면</div>
+        <div id="moveToEditPageButton" class="button width4 height1 round active">편집화면</div>
+        <!--<div id="moveToAdminPageButton" class="button width4 height1 round">관리화면</div>-->
+        <div id="logoutButton" class="button width4 height1 round">로그아웃</div>
+      </div>
+      <div class="barShadow"></div>
+    </div>    
+    <div id="bodyContainer">
+      <!--1/3 영역-->
+      <div id="pvrMenuContainer">
+        <!--vtour 이름 영역-->
+        <div id="vtourNameArea"></div>
+        <!--vtour 속성 변경 영역-->
+        <div id="nodePropertyContainer">
+          <form id="markerPropertyFrom">
+            <div class="propertyElement">
+              <div class="propertyName propertyWidth">
+                표시 zoom 범위
+              </div>
+              <div class="propertyContents propertyWidth">
+                <input type="text" name="objMinZoom" class="small"> -
+                <input type="text" name="objMaxZoom" class="small">
+              </div>
+            </div>
+            <div class="propertyElement iconProp propertyWidth markerProperty hotspotProperty markerIconProperty">
+              <div class="buttonBox"> 
+                <div class="button" id="vtourShareButton">공유</div>
+                <div class="button" id="vtourNMarkerModifyButton">저장</div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <!--pvr 속성 영역-->
+        <div id="pvrProperty" class="hidden">
+          <div id="pvrPropertyArea">
+          <form id="propertyForm">
+            <div class="propertyElement filetreeProp propertyWidth hidden pvrProperty">
+              <div class="propertyName propertyWidth">
+                이름
+              </div>
+              <div class="propertyContents propertyWidth">
+                <input type="text" name="name">
+              </div>
+            </div>
+            <div class="propertyElement filetreeProp propertyWidth hidden pvrProperty">
+              <div class="propertyName propertyWidth">
+                PVR 용 이미지
+              </div>
+              <div class="propertyContents propertyWidth">
+                <div class="radioBox">
+                  <input type="radio" name="pvrImageType" value="picture" checked>
+                  <label for="tileImageRadio">사진</label>
+                </div>
+                <div class="radioBox last">
+                  <input type="radio" name="pvrImageType" value="panorama">
+                  <label for="tileImageRadio">파노라마</label>
+                </div>
+                <input name="pvrImageFile[]" class="pvrImageInput pictureInput" type="file" multiple>
+                <input name="pvrPanoFile" class="hidden pvrImageInput panoramaInput" type="file">
+              </div>
+            </div>
+            <div class="propertyElement filetreeProp  propertyWidth hidden mapProperty layerProperty vtourProperty pvrProperty">
+              <div class="buttonBox"> 
+                <div class="button" id="nodeModifyButton">입력</div>
+              </div>
+            </div>            
+          </form>
+          </div>
+          <div id="propertyToggleButton"></div>
+        </div>
+        <!--pvr 영역-->
+        <div id="pvrMenu">
+          <div id="addPvrButton" class="pvrBox first">
+            <img src="source/add_pvr.jpg">
+          </div>          
+        </div>        
+      </div>
+      <!--2/3 영역-->
+      <div class="positioner">
+        <div id="pvrContainer"></div>        
+      </div>
+      <!--3/3 영역-->
+      <div class="positioner">
+        <div id="map">
+          <div id="mapContainer"></div>
+          <div id="mapSearch">
+            <div class="first">주소 검색</div>
+            <div class="second">
+              <input name="address" type="text">
+            </div>
+            <div class="third">
+              <div id="addressSearchButton" class="button">추가</div>
+            </div>
+          </div>
+          <div id="markerIconArea">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="bottomBar"></div>
+    <div class="loadingContainer hidden">
+      <div class="loadingProgress">
+        <img src="source/loading.gif">
+      </div>
+    </div>
+    <div class="popupBackground hidden">
+      <div class="area popup round">
+        <div>
+          <div class="button width4 height1">URL</div>
+          
+        </div>
+        <div class="area fullWidth">
+          <textarea class="fixSize fullWidth"></textarea>
+        </div>
+        <div class="rightAlign radioBox">
+          <input type="radio" name="viewType" value="v" checked>세로 정렬
+          <input type="radio" name="viewType" value="h">가로 정렬
+        </div>
+        <div class="button closeButton">×</div>
+      </div>
+    </div>
+    
+    <script type="text/javascript">
+      var file, myjqxhr, db, curMainData, curMainIcon, projectId = null, curVtourId = null, userId,
+          googleTileUrl = "https://mts1.google.com/vt/lyrs=m@231000000&hl=ko&gl=KR&src=app&x={x}&y={y}&z={z}&s={s}",
+          redMarker = L.icon({
+            iconUrl: "source/marker_icon.png",
+            iconSize: [25, 40],
+            iconAnchor: [12.5, 20]
+          });
+          
+
+      function checkDupleOfName(list, name){
+        var i;
+        for(i=0; i<list.length; i++)
+          if(list[i].name == name)
+            return true;
+        return false;
+      }
+      function getIdxById(list, id){
+        var i;
+        for(i=0; i<list.length; i++)
+          if(list[i].id == id)
+            return i;
+        return -1;
+      }
+      function noCacheUrl(url){
+        return url+'?'+(new Date()).getTime();
+      }
+
+      function setForNodePropertyArea(){
+        $('input[type=radio][name=pvrImageType]').change(function (){
+          $('.pvrImageInput').addClass('hidden');
+          $('.'+this.value+'Input').removeClass('hidden');
+        });
+        
+        $('#nodeModifyButton').click(function (){
+          var newVal, mapData, layer, vtour, key;
+
+          newVal = $('#propertyForm input[name|=name]').val();
+          if(!newVal){ alert("이름을 입력하여야 합니다."); return; }
+          for(key in db['vtour']){ vtour = db['vtour'][key]; }
+          
+          if( checkDupleOfName(vtour.options.pvrList, newVal) ){
+            alert("중복된 이름입니다.");
+            return false;
+          }
+          else if($('input[name|="pvrImageType"]:checked').val()=='picture' && !$('#propertyForm input[name|="pvrImageFile[]"').val()){
+            alert("사진을 업로드해야 합니다.");
+            return false;
+          }
+          else if($('input[name|="pvrImageType"]:checked').val()=='panorama' && !$('#propertyForm input[name|="pvrPanoFile"').val()){
+            alert("사진을 업로드해야 합니다.");
+            return false;
+          }
+          else{
+            newId = getNewId('pvr');
+            newNode = {
+              id: newId,
+              options:{
+                type: 'pvr',
+                vtourId: vtour.id,
+                name: newVal,
+                initialAth: 0,
+                initialAtv: 0,
+                initialFov: 90
+              }
+            }
+            vtour.options.pvrList.push( {id:newId, name:newVal} );
+            newNode.options.order = vtour.options.pvrList.length-1;
+            saveData(newNode);
+
+            loadData('vtour', newNode.vtourId);
+            pvrPlayer.addScene(newId, newNode.options);
+            db['pvr'][newId] = newNode;
+            
+            curMainData = newNode;
+            if($('input[name|="pvrImageType"]:checked').val()=='picture'){
+              newVal = $('#propertyForm input[name|="pvrImageFile[]"').val();
+              if(newVal){
+                $('#propertyForm').ajaxSubmit({
+                  data: {
+                    req: "uploadPvrImage",
+                    data: {
+                      projectId: projectId,
+                      id: curMainData.id,
+                      numOfImage: $('#propertyForm input[name|="pvrImageFile[]"')[0].files.length
+                    } 
+                  },
+                  type: 'post',
+                  url: 'file.php',
+                  success : function (pvrPath){
+                    $('#propertyForm input[name|="pvrImageFile[]"').val("");
+                    curMainData.options.pvrPath = pvrPath;
+                    pvrPlayer.sceneList[curMainData.id].setOption('pvrPath', pvrPath);
+                    saveData(curMainData);
+
+                    pvrPlayer.refresh();
+                    addPvrToMenu(curMainData.id, curMainData.options);
+                    //재설정을 하게 하기 위한 세팅 
+                    curMainData = null;
+                    $('.pvrBox[value|="'+newId+'"]').click(); 
+                  },
+                  beforeSend: function (jqxhr){
+                    myjqxhr = jqxhr;
+                    $('.loadingContainer').removeClass('hidden');
+                  },
+                  complete: function(){
+                    myjqxhr = null;
+                    $('.loadingContainer').addClass('hidden');
+                  }
+                });
+              }
+            }
+            else if($('input[name|="pvrImageType"]:checked').val()=='panorama'){
+              newVal = $('#propertyForm input[name|="pvrPanoFile"').val();
+              if(newVal){
+                $('#propertyForm').ajaxSubmit({
+                  data: {
+                    req: "uploadPvrPano",
+                    data: {
+                      projectId: projectId,
+                      id: curMainData.id
+                    } 
+                  },
+                  type: 'post',
+                  url: 'file.php',
+                  success : function (pvrPath){
+                    $('#propertyForm input[name|="pvrPanoFile"').val("");
+                    curMainData.options.pvrPath = pvrPath;                  
+                    pvrPlayer.sceneList[curMainData.id].setOption('pvrPath', pvrPath);                  
+                    saveData(curMainData);
+
+                    pvrPlayer.refresh();
+                    addPvrToMenu(curMainData.id, curMainData.options);
+                    //재설정을 하게 하기 위한 세팅 
+                    curMainData = null;
+                    $('.pvrBox[value|="'+newId+'"]').click(); 
+                  },
+                  beforeSend: function (jqxhr){
+                    myjqxhr = jqxhr;
+                    $('.loadingContainer').removeClass('hidden');
+                  },
+                  complete: function(){
+                    myjqxhr = null;
+                    $('.loadingContainer').addClass('hidden');
+                  }
+                });
+              }
+            }          
+          }                 
+        });
+      }
+
+      function setForIconPropertyArea(){
+        $('.addIcon').hover(function(){
+          $('.addIcon').attr('src', "source/newIcon_hover.png");
+        },function(){
+          $('.addIcon').attr('src', "source/newIcon.png");
+        });
+        $('.addIcon').click(function(){
+          if(projectId!==null)
+            $('#iconForm input[name="iconImageFile[]"]').click();
+        });
+        $('#iconForm input[name="iconImageFile[]"]').change(function(){
+          var newId, mainViewContent, newNode, type, i;
+
+          mainViewContent = "map";
+
+          newId = [];
+          for(i=0; i<document.getElementById('iconImageFile').files.length; i++){
+            newId[i] =  mainViewContent=="map"? getNewId('markerIcon'): getNewId('hotspotIcon');
+          }        
+          type =  mainViewContent=="map"? 'markerIcon': 'hotspotIcon';
+
+          $('#iconForm').ajaxSubmit({
+            type: 'post',
+            url : 'file.php',
+            data: {
+              req: "uploadIconImage",
+              data: {
+                type: type,
+                id: newId,
+                projectId: projectId
+              }
+            },
+            dataType: 'json',
+            success: function(iconList){
+              var idx, i;
+
+              for(i=0; i<iconList.length; i++){
+                newNode = {
+                  id: newId[i],
+                  options: {
+                    iconUrl: iconList[i].options.iconUrl,
+                    size: {
+                      x: iconList[i].options.size.x,
+                      y: iconList[i].options.size.y
+                    },
+                    iconAnchor: {
+                      x: iconList[i].options.size.x/2,
+                      y: iconList[i].options.size.y/2
+                    },
+                    actionType: 'linkToPvr',
+                    type: type,
+                    projectId: projectId
+                  }
+                };
+                db[type][newId[i]] = newNode;
+                idx = addIconToMenu(newId[i], newNode.options);
+
+                if(mainViewContent=="map"){
+                  var options = {};
+                  for(key in newNode.options){
+                    options[key] = newNode.options[key];
+                  }
+                  options.iconUrl = noCacheUrl(options.iconUrl);
+                  map.addIcon(newNode.id, options);
+                }
+                else {
+                  var options = {};
+                  for(key in newNode.options){
+                    options[key] = newNode.options[key];
+                  }
+                  options.iconUrl = noCacheUrl(options.iconUrl);
+                  pvrPlayer.addIcon(newNode.id, options);
+                }                
+
+                newNode.options.order = idx;
+                saveData(newNode);
+              }            
+              $('#iconForm input[name="iconImageFile[]"]').val('');
+            },
+            beforeSend: function (jqxhr){
+              myjqxhr = jqxhr;
+              $('.loadingContainer').removeClass('hidden');
+            },
+            complete: function(){
+              myjqxhr = null;
+              $('.loadingContainer').addClass('hidden');
+            }
+          });
+        });
+
+
+        $('#vtourNMarkerModifyButton').click(function (){
+          var curLayer, newMarker;
+
+          if(!$('#vtourNameArea input[name|=name]').length && curVtourId === null){
+            return;
+          }
+
+          if(isNaN($('input[name|="objMaxZoom"]').val()) || 
+            isNaN($('input[name|="objMinZoom"]').val())){
+            alert("zoom 입력값은 숫자이어야 합니다.");
+            return;
+          }
+          if(!$('input[name|="objMaxZoom"]').val() || 
+            !$('input[name|="objMinZoom"]').val()){
+            alert("zoom 입력값을 입력하여야 합니다.");
+            return;
+          }
+          if(Number($('input[name|="objMaxZoom"]').val()) < 
+            Number($('input[name|="objMinZoom"]').val())){
+            alert("zoom의 최대값이 최소값보다 커야 합니다.");
+            return;
+          }
+
+          //새 vtour 추가 
+          if($('#vtourNameArea input[name|=name]').length){
+            ///////////////////////
+            if($('select[name|="projectToLoad"').length){
+              $('#menuLoadProButton').click();
+            }
+            ///////////////////////////
+            curLayer = loadData('layer', map._curLayer.id);
+            newVal = $('input[name|=name]').val();
+            if(!newVal){ 
+              alert("이름을 입력하여야 합니다."); return; 
+            }         
+            if( checkDupleOfName(curLayer.options.vtourList, newVal) ){
+              alert("중복된 이름입니다."); return false;
+            }
+
+            newId = getNewId('vtour');
+            newNode = {
+              id: newId,
+              options:{
+                type: 'vtour',
+                layerId: curLayer.id,
+                name: newVal,
+                order: curLayer.options.vtourList.length-1,
+                pvrList: []
+              }
+            }
+            $.ajax({
+              async: false,
+              url: 'file.php',
+              type: 'post',
+              data: {
+                req: 'addVtourXml',
+                data: {
+                  projectId: projectId,
+                  vtourId: newId
+                }
+              },
+              success: function(newXmlPath){
+                newNode.xmlPath = newXmlPath;
+              }
+            });
+
+            curLayer.options.vtourList.push( {id:newId, name:newVal} );
+            
+            pvrPlayer.addVtour(newId, newNode.xmlPath, newNode.options);
+            db['vtour'][newId] = newNode;
+            
+            curVtourId = newNode.id;
+            saveData(newNode);
+
+            pvrPlayer.setForVtour(newId);
+            /////////////////////////////////////////////
+            for(key in map.iconList){
+              icon = map.iconList[key];
+            }
+            newId = getNewId('marker');
+
+            db['marker'][newId] = {
+              id: newId,
+              latlng: {
+                lat: 0,
+                lng: 0
+              },
+              options: {
+                layerId: map._curLayer.id,
+                icon: icon.id,
+                minLevel: Number($('input[name|="objMinZoom"]').val()),
+                maxLevel: Number($('input[name|="objMaxZoom"]').val()),
+                actionType: "linkToVtour",
+                linkedVtour: curVtourId,
+                opacity: 0,
+                type: "marker"
+              }
+            }
+
+            newMarker = map.addMarker(newId, db['marker'][newId].latlng, db['marker'][newId].options);
+            makeMarkerActive(newMarker);
+            setMarker(newMarker);
+
+            mainMarker = newMarker;
+            curMainIcon = db['marker'][newId];
+
+            saveData(curMainIcon);
+            
+            $('#vtourNameArea').removeClass('withInput');
+            $('#vtourNameArea').html(loadData('vtour', curVtourId).options.name);
+          }
+
+          //vtour 수정
+          if(curMainIcon){
+            newVal = Number($('input[name|="objMaxZoom"]').val());
+            if(newVal != curMainIcon.options.maxZoom){
+              curMainIcon.options.maxLevel = newVal;
+              map.markerList[curMainIcon.id].setOption('maxLevel', newVal);
+            }
+
+            newVal = Number($('input[name|="objMinZoom"]').val());
+            if(newVal != curMainIcon.options.minLevel){
+              curMainIcon.options.minLevel = newVal;
+              map.markerList[curMainIcon.id].setOption('minLevel', newVal);
+            }
+            saveData(curMainIcon);
+          }
+        });
+
+        $('#iconDeleteButton').click(function (){
+          var ret;
+
+          ret = confirm("삭제하시겠습니까?");
+          if(!ret) return;
+
+          deleteIcon(curMainIcon.options.type, curMainIcon.id);
+        });
+
+        $('#markerPropertyToggleButton').click(function(){
+          $('#markerProperty').addClass('hidden');
+        })
+      }
+
+      function setForLoadingContainer(){
+        $('#loadingContainer').click(function (){
+          if( confirm('처리를 중단하시겠습니까?') ){
+            myjqxhr.abort();
+            myjqxhr = null;
+            $('#loadingContainer').addClass('hidden');
+          }
+        })
+      }
+
+      function setForDragNDrop(){
+        $('#mapContainer').on('dragover', function(ev){ allowDrop(ev.originalEvent); });
+        $('#mapContainer').on('drop',     function(ev){ drop(ev.originalEvent);      });
+        
+        map.map.on('mousemove', function (mouse){
+          var newMarker, newId, options, zoom;
+          if(dropData!==null && map._curLayer!==null){
+            dropData = null;          
+            if(curVtourId === null){
+              alert("선택된 프로젝트가 없습니다.");
+              return;
+            }
+            if(mainMarker._latlng.lat!==0 && mainMarker._latlng.lng!==0){
+              alert("이미 마커가 추가되었습니다.");
+              return;
+            }
+
+            zoom = mainMarker.options.maxLevel<map.map._layersMaxZoom?
+              mainMarker.options.maxLevel:
+              map.map._layersMaxZoom;
+            map.map.setView(mouse.latlng, zoom, {reset:true});
+
+            mainMarker.setLatLng(mouse.latlng);
+            //makeMarkerActive(mainMarker);
+            mainMarker.options.opacity = 1;
+            mainMarker.refresh();          
+
+            curMainIcon.latlng.lat = mouse.latlng.lat;
+            curMainIcon.latlng.lng = mouse.latlng.lng;
+                
+            
+            saveData(curMainIcon);
+          }
+        });
+      }
+
+      function setForMenuBar(){
+        $('#moveToViewPageButton').click(function (){
+          $.post('member.php', {req: 'checkLogin'},
+            function (ret){
+              if(ret == 'logout') location.replace('login.php');
+              else location.replace('view.html');
+            }
+          );
+        });
+
+        $('#logoutButton').click(function (){
+          if(confirm("로그아웃 하시겠습니까?")){
+            $.post("member.php", 
+              {
+                req   : 'logout', 
+              }, 
+              function(result){
+                location.replace('login.php');
+              }
+            );
+          }        
+        });
+
+        $('#menuNewProButton').click(function(){
+          setForAddingNewVtour();
+        });
+
+        $('#menuLoadProButton').click(function(){
+          var key, vtourList;
+
+          for(key in db['layer']){
+            vtourList = db['layer'][key].options.vtourList;
+            break;
+          }
+
+          if($('select[name|="projectToLoad"]').length == 0){
+            html = "<select name='projectToLoad' class='menuSelect'>";
+            projectList = vtourList;
+            for(i=0; i<projectList.length; i++){
+              html += "<option value='"+projectList[i].id+"'>"+projectList[i].name+"</option>";
+            }
+            html += "</select>";
+            html += '<div id="selectProjectToLoad" class="small button">선택</div>';
+
+            $("#menuLoadProButton").after(html);
+
+            if(curVtourId !== null){
+              $('select[name|="projectToLoad"]').val(curVtourId);
+            }
+
+            $("#selectProjectToLoad").click(function(){
+              showVtourData( loadData('vtour', $('select[name|="projectToLoad"]').val()) );
+              setViewForVtour( loadData('vtour', $('select[name|="projectToLoad"]').val()) );
+                          
+              $('select[name|="projectToLoad"]').remove();
+              $("#selectProjectToLoad").remove();
+            });
+          }
+          else {
+            $('select[name|="projectToLoad"]').remove();
+            $("#selectProjectToLoad").remove();
+          }
+        });
+
+        $('#menuDeleteProButton').click(function(){
+          var html, i, projectList;
+
+          if(curVtourId===null) return;
+          if(!confirm("삭제하시겠습니까?")) return;
+
+          $.ajax({
+            async: false,
+            type: 'post',
+            url: 'setData.php',
+            data: {
+              req: 'delData',
+              data: {
+                id: curVtourId,
+                options: {
+                  type: 'vtour'
+                }
+              }
+            },
+            success: function (){
+              oldMarkerId = mainMarker.id;
+              deleteNode('vtour', curVtourId);
+              deleteIcon('marker', oldMarkerId);
+
+              if($('select[name|="projectToLoad"').length){
+                $('#menuLoadProButton').click();
+              }            
+            }
+          });
+        });
+      }
+
+      function setForPvrMenu(){
+        $('.pvrBox.first').click(function(){
+          if(curVtourId !== 0 && !curVtourId)  return;
+          //pvr 추가 
+          $('#pvrProperty').removeClass('hidden');
+          $('.pvrBox.clicked').removeClass('clicked');
+          $(this).addClass('clicked');
+          $('.filetreeProp').addClass('hidden');
+          $('#markerProperty').addClass('hidden');
+          $('.pvrProperty').removeClass('hidden');
+          $('#pvrPropertyArea .propertyContents input:not([type|="radio"])').val('');
+          $('input[type|="radio"][name|="pvrImageType"][value|="picture"]').click();
+        });
+
+        $('#propertyToggleButton').click(function(){
+          $('#pvrProperty').addClass('hidden');
+        });
+      }
+
+      $(document).ready(function(){
+        var key, mainLayer;
+
+        $.ajax({
+          async: false,
+          type: 'post',
+          url: 'member.php',
+          data: {
+            req: 'checkLoginAndType'
+          },
+          dataType: 'json',
+          success: function (data){
+            if(data.result == 'logout') location.replace('login.php');
+            if(data.type != 'real_estate') location.replace('index.html');
+            if(data.type == 'viewer') location.replace('viewer.html');
+            userId = data.id;
+          }
+        });
+
+        map = new Map(0, "mapContainer", {
+          mode  : "edit",
+          useView : true,
+        });      
+
+        $.ajax({
+          async: false,
+          type: 'get',
+          url: 'getData.php',
+          data: {
+            req: 'getProjectList',
+            data: {
+              userId: userId
+            }
+          },
+          dataType: 'json',
+          success: function (data){
+            var i;
+            db['user']['options'] = {};
+            db['user']['options']['projectList'] = data;
+
+            if(db['user']['options']['projectList'][0])
+              loadProject(db['user']['options']['projectList'][0].id);
+          }
+        });
+
+        for(key in loadData('map', projectId).options.layerList){
+          mainLayer = loadData('layer', db['map'][projectId].options.layerList[key].id);
+          break;
+        }      
+        map.changeLayer(mainLayer.id);
+        map.map.setView(mainLayer.options.mainView.latlng, mainLayer.options.mainView.zoom);
+
+
+        setForMenuBar(); 
+        setForPvrMenu();
+        setForNodePropertyArea();
+        setForIconPropertyArea();
+        setForDragNDrop();
+        setForLoadingContainer();
+        $('#addressSearchButton').click(function(){
+          var newLatLng, zoom;
+
+          newLatLng = getLatLngFromAddress($('input[name|="address"]').val());
+          if(newLatLng){
+            map.map.setView(newLatLng, map.map.getMaxZoom());
+
+            if(curVtourId!==null){
+              zoom = mainMarker.options.maxLevel<map.map._layersMaxZoom?
+                mainMarker.options.maxLevel:
+                map.map._layersMaxZoom;
+              map.map.setView(newLatLng, zoom, {reset:true});
+
+              mainMarker.setLatLng(newLatLng);
+              mainMarker.options.opacity = 1;
+              mainMarker.refresh();
+
+              curMainIcon.latlng.lat = newLatLng.lat;
+              curMainIcon.latlng.lng = newLatLng.lng;
+
+              saveData(curMainIcon);
+
+              //makeMarkerActive(mainMarker);
+            }          
+          }
+          else{
+            alert("검색에 실패하였습니다.")
+          }
+          $('input[name|="address"]').val('');
+        });
+        $('#mapSearch input').keypress(function (ev){
+          if(ev.keyCode == 13){
+            $('#addressSearchButton').click();
+          }
+        });
+        $('.closeButton').click(function(){
+          $(this).closest('.popupBackground').addClass('hidden');
+        })
+        $('#vtourShareButton').click(function(){
+          if(projectId!==null && curVtourId!==null){
+            $('.popupBackground').removeClass('hidden');
+            $('.popupBackground textarea').val(
+              "<iframe src=\"http://"+window.location.hostname+"/pvr_editor/view.php?projectId="+projectId+"&vtourId="+curVtourId+"&viewMode='"+$('.popupBackground input[name|="viewType"]').val()+"'\">"
+            );
+          }          
+        });
+        $('.popupBackground input[name|="viewType"]').click(function(){
+          $('.popupBackground textarea').val(
+            '<iframe src=\'http://'+window.location.hostname+'/pvr_editor/view.php?projectId='+projectId+'&vtourId='+curVtourId+'&viewMode="'+$(this).val()+'"\'>'
+          );
+        });
+      });
+
+      var db = {
+        user: {},
+        map: {},
+        vtour: {},
+        pvr: {},
+        layer: {},
+        markerIcon: {},
+        hotspotIcon: {},
+        marker: {}
+      };
+
+      function setMarker(marker){     
+
+        marker.on('dragstart', function (){
+          curMainIcon = db['marker'][this.id];
+          //showIconData(curMainIcon);
+          
+          $('.iconBox.clicked').removeClass('clicked');
+          $('#markerProperty').removeClass('hidden');
+          $('#pvrProperty').addClass('hidden');
+        });
+        marker.on('dragend', function (){
+          db['marker'][this.id]['latlng']['lat'] = this._latlng.lat;
+          db['marker'][this.id]['latlng']['lng'] = this._latlng.lng;
+          
+          saveData(db['marker'][this.id]);
+
+          if(this.options.linkedVtour!==undefined){
+            linkedVtour = loadData('vtour', this.options.linkedVtour);
+            //showVtourData(linkedVtour);
+            //setIcon 이후에 클릭과 dragend가 같이 실행되는 경우가 있음
+            //이 경우 map.setView가 잘 실행되지 않는다.
+            this.refresh();
+            map.map.setView(this._latlng, map.map.getZoom());
+          }                
+        });
+        marker.on('click', function (){
+          var linkedPvr;  
+          
+          if(this.options.linkedVtour!==undefined){
+            linkedVtour = loadData('vtour', this.options.linkedVtour);
+        
+            showVtourData(linkedVtour);
+
+
+            map.map.setView(this._latlng, map.map.getZoom());
+          }
+
+          $('.iconBox.clicked').removeClass('clicked');
+          $('#markerProperty').removeClass('hidden');
+          $('#pvrProperty').addClass('hidden');
+        });
+      }
+
+      function loadProject(project){
+        var key;
+
+        //기존 항목 모두 제거
+        $('#myKrpano').remove();
+        $('#pathArea').html('');
+        $('#markerProperty').addClass('hidden');
+        //$('.propertyElement').addClass('hidden');
+        curMainData = null;
+        curMainIcon = null;
+        map._curLayer = null;
+
+        for(key in db){
+          if(key != "user"){
+            db[key] = {};  
+          }        
+        }
+
+        for(key in map.map._layers){
+          map.map.removeLayer(map.map._layers[key]);
+        }
+        $('.iconBox:not(.first)').remove();
+
+        projectId = project;
+        //file tree 생성 
+        embedpano({
+          target: "pvrContainer", 
+          id: "myKrpano", 
+          bgcolor: "#FFFFFF", 
+          html5: "only", 
+          swf: "krpano.swf",
+          xml: noCacheUrl("template/krpano.xml"),
+          onready: setPvrPlayer
+        });      
+
+        //marker icon 생성
+        $.ajax({
+          async: false,
+          type: 'get',
+          url: 'getData.php', 
+          data:{
+            req: "getMarkerIconList", 
+            data: {
+              projectId: projectId
+            }
+          },
+          dataType: 'json',
+          success: function (data){
+            var i, newNode,
+                midX, midY;
+
+            for(i=0; i<data.length; i++){
+              newNode = data[i];
+
+              midX = data[i].options.size.x/2;
+              midY = data[i].options.size.y/2;
+
+              newNode.options.iconAnchor = {x:midX, y:midY};
+              newNode.options.type = "markerIcon";
+
+              db[newNode.options.type][newNode.id] = newNode;          
+              addIconToMenu(newNode.id, newNode.options);
+              map.addIcon(newNode.id, newNode.options); 
+            }
+          }
+        });
+
+        $.get('getData.php', {
+          req: "getMarkerList", 
+          data: {
+            projectId: projectId
+          }
+        }, function (data){
+          var i, newNode, newMarker,
+              midX, midY;
+
+          for(i=0; i<data.length; i++){
+            newNode = data[i];
+
+            loadData('layer', newNode.options.layerId);
+            db[newNode.options.type][newNode.id] = newNode;
+
+            if(newNode.latlng.lat === 0 && newNode.latlng.lng ===0){
+              newNode.options.opacity = 0;
+            }
+            newMarker = map.addMarker(newNode.id, newNode.latlng, newNode.options);
+            makeMarkerDeactive(newMarker);          
+            setMarker(newMarker);
+          }
+        }, 'json');
+      }
+
+      function makeMarkerActive(marker){
+        marker.options.defaultIcon = marker.options.icon;
+        marker.setIcon(redMarker);      
+        marker.setOption('draggable', true);
+      }
+      function makeMarkerDeactive(marker){
+        if(marker.options.defaultIcon){
+          marker.setIcon(marker.options.defaultIcon);
+        }      
+        marker.setOption('draggable', false);
+      }
+
+      function loadData(type, id){
+        if(!db[type][id]){
+          $.ajax({
+            async   :false,
+            data    :{
+              req     :"getNodeData",
+              data    :{
+                type    :type,
+                id      :id
+              } 
+            },
+            dataType:'json',
+            type    :'get',
+            url     :'getData.php',
+            success : function(newData){
+              if(type == 'map'){
+              }
+              if(type == 'layer'){
+                if(newData.options.tileImageType == 'presetMap')
+                  newData.options.maxNativeZoom = 22;
+                else
+                  newData.options.maxNativeZoom = '0';
+
+                map.addTileLayer(newData.id, noCacheUrl(newData.tileUrl), newData.options);
+                loadData('map', newData.options.mapId);
+              }
+              if(type == 'vtour'){
+                map.addView(newData.id, newData.latlng, newData.zoom, newData.options);
+                pvrPlayer.addVtour(newData.id, newData.xmlPath, newData.options);
+                loadData('layer', newData.options.layerId);
+              }
+              if(type == 'pvr'){
+                loadData('vtour', newData.options.vtourId);
+                pvrPlayer.addScene(newData.id, newData.options, false);
+              }
+              db[type][id] = newData;
+            }
+          });
+        }
+        return db[type][id];
+      }
+
+      function saveData(data){
+        $.ajax({
+          async: false,
+          type: 'post',
+          url: 'setData.php', 
+          data: {
+            req: 'setData',
+            data: data
+          }, 
+          success: function(){
+          }
+        });
+      }
+      function delData(data){
+        $.ajax({
+          async: false,
+          type: 'post',
+          url: 'setData.php', 
+          data: {
+            req: 'delData',
+            data: data
+          }, 
+          success: function(){          
+          }
+        });
+      }
+
+      function setPvrPlayer(){
+        pvrPlayer = new PvrPlayer(myKrpano, "pvrPlayer");
+        pvrPlayer.refresh();      
+      }
+
+      function setMainViewContentType(type){
+        if(type == "map" && $('#mapContainer').hasClass('hidden')){
+          $('#mapContainer').removeClass('hidden');
+          $('#pvrContainer').addClass('hidden');
+          $('#markerIconArea').removeClass('hidden');
+          $('#hotspotIconArea').addClass('hidden');
+          $('#anchor').addClass('hidden');
+          $('.iconBox.clicked').removeClass('clicked');
+          curMainIcon = null;
+        }
+        else if(type == "vtour"){
+          $('#pvrContainer').removeClass('hidden');
+          $('#mapContainer').addClass('hidden');
+          $('#hotspotIconArea').addClass('hidden');
+          $('#markerIconArea').addClass('hidden');
+          $('#anchor').addClass('hidden');
+          $('.iconBox.clicked').removeClass('clicked');
+          curMainIcon = null;
+        }
+        else if(type == "pvr" && $('#hotspotIconArea').hasClass('hidden')){
+          $('#pvrContainer').removeClass('hidden');
+          $('#mapContainer').addClass('hidden');
+          $('#hotspotIconArea').removeClass('hidden');
+          $('#markerIconArea').addClass('hidden');
+          $('#anchor').addClass('hidden');
+          $('.iconBox.clicked').removeClass('clicked');
+          curMainIcon = null;
+        }      
+      }
+
+      function showPvrData(newData){
+        var vtour, layer, map;
+
+        $('.filetreeProp').addClass('hidden');
+        $('#pvrProperty').addClass('hidden');
+        $('input[type|="radio"][name|="pvrImageType"][value|="picture"]').click();
+
+        vtour = db['vtour'][newData.options.vtourId];
+        layer = db['layer'][vtour.options.layerId];
+        mapData = db['map'][layer.options.mapId];
+
+        pvrPlayer.showScene(newData.id);
+        $('#propertyForm input[name|=name]').val(db['pvr'][newData.id].options.name);
+        $('#propertyForm input[name|="pvrImageFile[]"]').val(''); 
+        $('#propertyForm input[name|="initialAth"]').val(Number(newData.options.initialAth).toFixed(4));
+        $('#propertyForm input[name|="initialAtv"]').val(Number(newData.options.initialAtv).toFixed(4));
+        $('#propertyForm input[name|="initialFov"]').val(Number(newData.options.initialFov).toFixed(4));
+      }
+
+      ///////////////////////////////
+      var mainMarker = null;
+      function showVtourData(newData){
+        var pvrList = newData.options.pvrList,
+            markerId, pvrId, i, pvr;
+
+        //이전 vtour 정보의 제거
+        $('.pvrBox:not(.first)').remove();
+        if(mainMarker) makeMarkerDeactive(mainMarker);
+        curMainData = null;
+        if($('select[name|="projectToLoad"').length){
+          $('#menuLoadProButton').click();
+        }
+
+
+        curVtourId = newData.id;
+        for(markerId in db.marker){
+          if(db.marker[markerId].options.linkedVtour == curVtourId){
+            mainMarker = map.markerList[markerId];
+            curMainIcon = loadData('marker', markerId);
+            break;
+          }
+        }
+        
+        $('#vtourNameArea').html(newData.options.name);
+        $('input[name|="objMinZoom"]').val(mainMarker.options.minLevel);
+        $('input[name|="objMaxZoom"]').val(mainMarker.options.maxLevel);
+        for(i=0; i<pvrList.length; i++){
+          pvr = loadData('pvr', pvrList[i].id);
+          addPvrToMenu(pvr.id, pvr.options);
+        }
+
+        if(pvrList.length)  
+          $('.pvrBox[value|='+pvrList[0].id+']').click();
+        else
+          pvrPlayer.setForVtour(newData.id);
+        
+        makeMarkerActive(mainMarker);
+      }
+      function setViewForVtour(newData){
+        var marker, zoom;
+
+        for(markerId in db.marker){
+          if(db.marker[markerId].options.linkedVtour == curVtourId){
+            marker = map.markerList[markerId];
+            break;
+          }
+        }
+        if(marker._latlng.lat !== 0 && marker._latlng.lng !==0 ){
+          zoom = mainMarker.options.maxLevel<map.map._layersMaxZoom?
+            mainMarker.options.maxLevel:
+            map.map._layersMaxZoom;
+          map.map.setView(marker._latlng, zoom);
+        }      
+      }
+
+      function clearVtourData(){
+        $('#vtourNameArea').html('');
+        $('input[name|="objMinZoom"]').val('');
+        $('input[name|="objMaxZoom"]').val('');
+        $('.pvrBox:not(.first)').remove();
+        if(mainMarker)
+          makeMarkerDeactive(mainMarker);
+
+        pvrPlayer.clearScreen();
+        curMainData = null;
+        curMainIcon = null;
+        mainMarker = null;
+        curVtourId = null;
+      }
+      function setForAddingNewVtour(){  
+        clearVtourData();
+        $('#vtourNameArea').addClass("withInput");
+        $('#vtourNameArea').html(
+          '<input name="name" type="text">'
+        );
+        $('input[name|="objMinZoom"]').val(14);
+        $('input[name|="objMaxZoom"]').val(18);
+        //지도와 외부 설정의 제거
+        
+        pvrPlayer.clearScreen();
+      }
+      ///////////////////////////////
+
+
+
+
+      function showMapData(newData){
+        $('#pathArea').html(newData.options.name);
+      }
+      function deleteNode(type, id){
+        var oldNode, IdForFileTree, i, pvrList;
+
+        if(!db[type][id]) loadData(type,id);
+        oldNode = db[type][id];
+
+        /*if(oldNode.options.type == "map"){ 
+          file.deleteNode('map'+id);
+          delete db[type][id];        
+        }*/
+       
+        if(type == "pvr"){
+          pvrPlayer.delScene(id);
+          $.ajax({
+            async   :false,
+            data    :{
+              req     :"delPvr",
+              data    :{
+                id: id,
+                projectId: projectId
+              } 
+            },
+            type    :'post',
+            url     :'file.php'
+          });
+
+          pvrList = db['vtour'][oldNode.options.vtourId].options.pvrList;
+          pvrList.splice(getIdxById(pvrList, id), 1);
+          setOrderByIdx('pvr', pvrList);
+
+          if(db['vtour'][oldNode.options.vtourId].options.mainPvr == id)
+            db['vtour'][oldNode.options.vtourId].options.mainPvr = 
+              pvrList.length>0? pvrList[0].id: null;
+
+          $('.pvrBox[value|="'+id+'"]').remove();
+
+          delete db[type][id];
+        }
+        else if(type == "vtour"){
+          //연결된 xml 수정(삭제)        
+          $.ajax({
+            url: 'file.php',
+            type: 'post',
+            data: {
+              req: 'delVtourXml',
+              data: {
+                projectId: projectId,
+                vtourId: id
+              }
+            }
+          });
+
+          //pvrPlayer에서 삭제 
+          pvrPlayer.delVtour(id);
+
+          //js-db상에서의 삭제 - 하위 pvr도 같이 삭제
+          delete db[type][id];
+          for(i=0; i<oldNode.options.pvrList.length; i++){
+            if(curMainData!==null && oldNode.options.pvrList[i].id == curMainData.id) curMainData = null;
+            $.ajax({
+              async: false,
+              data: {
+                req: "delPvr",
+                data: {
+                  id: oldNode.options.pvrList[i].id,
+                  projectId: projectId
+                } 
+              },
+              type:'post',
+              url:'file.php'
+            });
+            delete db['pvr'][oldNode.options.pvrList[i].id];
+          }
+
+          //화면 초기화
+          clearVtourData(oldNode);
+
+          //vtour 순서 갱신->자동으로 DB에 기록됨
+          vtourList = db['layer'][oldNode.options.layerId].options.vtourList;
+          vtourList.splice(getIdxById(vtourList, id), 1);
+          setOrderByIdx('vtour', vtourList);
+          //pvr제거
+        }
+
+        //화면 지우기 
+        if(curMainData && type == curMainData.options.type && id == curMainData.id){
+          $('.filetreeProp').addClass('hidden');
+          curMainData = null;
+          pvrPlayer.clearScreen();
+          //property 및 mainContents를 지워버리는 함수 
+        }
+
+        //db에 저장
+        delData(oldNode);
+      }
+      function deleteIcon(type, id){
+        var oldNode, IdForFileTree, i, pvrList, newId, iconList;
+
+        if(!db[type][id]) loadData(type,id);
+        oldNode = db[type][id];
+
+        /*if(oldNode.options.type == "map"){ 
+          file.deleteNode('map'+id);
+          delete db[type][id];        
+        }*/
+        if(type == "markerIcon"){ 
+          iconId = "mic"+id;
+          console.log(newId);
+
+          map.removeIcon(id);
+          iconList = $('#markerIconArea .iconBox:not(.first) img');
+          for(i=0; i<iconList.length; i++){ 
+            newId = iconList[i].id.replace('mic', '');
+            db['markerIcon'][newId].options.order = i;
+            saveData({
+              id: newId,
+              options: {
+                type: 'markerIcon',
+                order: i
+              }
+            });
+          }
+
+          $('#'+iconId).parent().remove();
+          delete db[type][id];                
+        }
+
+        if(type == 'marker'){
+          map.delMarker(id);
+          delete db[type][id];
+        }  
+
+        if(curMainIcon && type == curMainIcon.options.type && curMainIcon.id == id){
+          $('#markerProperty').addClass('hidden');
+          curMainIcon = null;
+        }         
+        
+        delData(oldNode);
+      }
+      function getNewId(type){
+        var newId, options={};
+
+        if(type=='project'){
+          options['userId'] = userId;
+        }
+
+        $.ajax({
+          async   :false,
+          data    :{
+            req     :"getNewId",
+            data    :{
+              type    :type,
+              options :options            
+            } 
+          },
+          dataType:'json',
+          type    :'get',
+          url     :'getData.php',
+          success : function(id){
+            newId = id;
+          }        
+        });
+
+        return newId;
+        //return newId = Math.round(Math.random()*1000);
+      }
+      function addIconToMenu(id, options){
+        var newId, margin, iconUrl;
+
+        newId = options.type=="markerIcon"? "mic": "hic";
+        newId += id;
+
+        iconUrl = options.iconUrl=="source/marker_icon2.png"?"source/marker_icon.png":options.iconUrl;
+
+        $('#'+options.type+'Area').append(
+          '<div class="iconBox">'+
+            '<img dragable="true" class="iconImage" id="'+newId+'" src="'+iconUrl+'?'+(new Date()).getTime()+'">'+
+          '</div>'
+        );
+
+        options.size.x > options.size.y?
+          $('#'+newId).css('width', '55px'):
+          $('#'+newId).css('height', '55px');
+
+        if(options.size.x > options.size.y){
+          margin = (55 - options.size.y * 55 / options.size.x)/2;
+          $('#'+newId).css('margin-top', margin+'px');
+        }
+
+        $('#'+options.type+'Area .iconBox:last img')[0].addEventListener('dragstart', function(ev){
+
+          drag(ev);
+          //curMainIcon = db['markerIcon'][this.id.replace('mic','')];
+          /*$('#iconPropArea').addClass('hidden');
+          $('#propertyToggleButton').addClass('hidden');*/
+        });
+
+        return $('#'+options.type+'Area .iconBox').length - 1;
+      }
+
+      function addPvrToMenu(id, options){
+        if( $('.pvrBox[value|="'+id+'"]').length ) return;
+
+        $('.pvrBox.first').after(
+          '<div class="pvrBox" value="'+id+'">'+
+            '<div class="pvrNameArea">'+options.name+'</div>'+
+            '<div class="nodeDeleteButton">×</div>'+
+            '<div class="pvrPictureArea">'+
+              '<img src="'+noCacheUrl(options.pvrPath+'/pano_thumb.jpg')+'">'+
+            '</div>'+
+          '</div>'
+        );
+
+        $('.pvrBox:nth-child(2)').click(function(){
+          var pvrId;
+
+          $('#pvrProperty').addClass('hidden');
+          $('#markerProperty').addClass('hidden');
+          $('.pvrBox.clicked').removeClass('clicked');
+          $(this).addClass('clicked');
+
+          pvrId = $(this).attr('value');    
+          //이미 보고 있는 화면이라면 다시 load하지 않음    
+          if(!curMainData || curMainData.id != pvrId){ 
+            curMainData = loadData('pvr', pvrId);         
+            showPvrData(curMainData);
+          }
+        });
+        $('.pvrBox:nth-child(2) .nodeDeleteButton').hover(function(){
+          $(this).css('color', 'red');
+        }, function(){
+          $(this).css('color', 'black');
+        })
+        $('.pvrBox:nth-child(2) .nodeDeleteButton').click(function(){
+          if(!confirm("삭제하시겠습니까?")) return;
+          $('#markerProperty').addClass('hidden');
+          deleteNode('pvr', $(this).parent().attr('value'));
+        })
+      }
+
+      function drawInputAreaByActionType(actionType, options){
+        var html,
+            vtourList, pvrList,
+            i, j;
+        
+        $('.iconActionInput').remove();
+        if(actionType=="linkToPvr"){
+          html = '<select name="linkedPvr" class="propSelectWidth iconActionInput">';
+
+          if(!isNaN(options.layerId)){
+            vtourList = loadData('layer', options.layerId).options.vtourList;
+
+            for(i=0; i<vtourList.length; i++){
+              html += '<optgroup label="'+vtourList[i].name+'">';
+
+              if(!db['vtour'][vtourList[i].id]) loadData('vtour', vtourList[i].id);
+              pvrList = db['vtour'][vtourList[i].id].options.pvrList;
+              for(j=pvrList.length-1; j >= 0; j--){
+                html += '<option value="'+pvrList[j].id+'">'+pvrList[j].name+'</option>';
+              }
+              html += '</optgroup>';
+            }
+          }
+          
+          html += '</select>';
+          $('select[name|="iconActionType"]').after(html);
+          
+          $('select[name|="linkedPvr"]').change(function (){
+            if(curMainIcon.options.type == "markerIcon"){
+              newVal = $(this).val();
+              curMainIcon.options.linkedPvr = newVal;
+              map.iconList[curMainIcon.id].setOption('linkedPvr', newVal);
+            }
+          });
+          
+          if(options.type == "markerIcon"){
+            if(!curMainIcon.options.linkedPvr) 
+              curMainIcon.options.linkedPvr = $('select[name|="linkedPvr"]').val();
+            $('select[name|="linkedPvr"]').val(curMainIcon.options.linkedPvr);
+            if($('select[name|="linkedPvr"]').val() != curMainIcon.options.linkedPvr){
+              $('select[name|="linkedPvr"] option:first').attr('selected', '');
+              curMainIcon.options.linkedPvr = $('select[name|="linkedPvr"]').val();
+            }
+          }
+          else if(options.type == "marker"){
+            $('select[name|="linkedPvr"]').val(curMainIcon.options.linkedPvr);
+          }       
+        }
+      }
+
+      function showIconData(data){
+        options = {};
+
+        $('textarea[name|="iconDesc"]').val(data.options.desc);
+        $('select[name|="iconActionType"]').val(data.options.actionType);
+
+        if(data.options.type == "markerIcon"){
+          $('.iconProp').addClass('hidden');
+          $('.markerIconProperty').removeClass('hidden');
+          if(map._curLayer) options.layerId = map._curLayer.id;
+          options.linkedPvr = data.options.linkedPvr;
+          options.type = data.options.type;
+        }
+        if(data.options.type == "marker"){
+          $('#markerProperty').removeClass('hidden');
+
+          $('.iconProp').addClass('hidden');
+          $('.markerProperty').removeClass('hidden');
+          options.layerId = data.options.layerId;
+          options.linkedPvr = data.options.linkedPvr;
+          options.type = data.options.type;
+
+          $('input[name|="objMaxZoom"]').val(data.options.maxLevel);
+          $('input[name|="objMinZoom"]').val(data.options.minLevel);
+          $('input[name|="objLat"]').val(Number(data.latlng.lat).toFixed(4));
+          $('input[name|="objLng"]').val(Number(data.latlng.lng).toFixed(4));
+        }
+        drawInputAreaByActionType(data.options.actionType, options);
+      }
+
+      function setOrderByIdx(type, list){
+        for(i=0; i<list.length; i++){
+          loadData(type, list[i].id);
+          db[type][list[i].id].options.order = i;
+          saveData({
+            id: list[i].id,
+            options: {
+              type: type,
+              order: i
+            }
+          })
+        }
+      }
+
+      function getLatLngFromAddress(address){
+        var latlng;
+
+        $.ajax({
+          async: false,
+          type: 'get',
+          url: 'getData.php',
+          data: {
+            req: 'getLatLngFromAddress',
+            data: {
+              address: address
+            }
+          },
+          dataType: 'json',
+          success: function (newLatLng){
+            latlng = newLatLng;
+          }
+        });
+        return latlng;
+      }
+
+      var dropData = null;
+      function drop(ev){
+        var iconId = ev.dataTransfer.getData("text");
+        dropData = Number(iconId);      
+        ev.preventDefault();
+      }
+      function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id.replace('mic','').replace('hic',''));  
+      }
+      function allowDrop(ev) { 
+        ev.preventDefault();  
+      }
+
+      function addNewMember(id, password){
+        var porjectId, layerId, vtourId;
+
+        newName = id;
+        newId = getNewId('project');
+        projectId = newId;
+        //프로젝트 정보 저장 
+        saveData({
+          id: newId, 
+          options: {
+            name: newName,
+            userId: userId,
+            type: 'project'
+          }
+        });
+        //프로젝트 폴더 생성
+        $.ajax({
+          async: false,
+          type: 'post',
+          url: 'file.php',
+          data: {
+            req: "setNewProject",
+            data: {
+              projectId: newId
+            }
+          }
+        })
+
+        //레이어 저장
+        newName = "야외";
+        newId = getNewId('layer');
+        layerId = newId;
+        newNode = {
+          id: newId,
+          tileUrl: googleTileUrl,
+          options: {
+            type: 'layer',
+            name: newName,
+            mainView:{
+              latlng:{lat: 36.2, lng: 127.26}, 
+              zoom: 7
+            },
+            maxZoom: 18,
+            minZoom: 0,
+            maxNativeZoom: 22,
+            mapId: projectId,
+            tileImageType: 'presetMap',   
+            vtourList: []
+          }
+        }
+        saveData(newNode);
+
+        //vtour 저장
+        newName = "야외";
+        newId = getNewId('vtour');
+        vtourId = newId;
+        newNode = {
+          id: newId,
+          latlng: {
+            lat: 36.2,
+            lng: 127.26
+          },
+          zoom: 7,
+          options:{
+            type: 'vtour',
+            layerId: layerId,
+            name: newName,
+            pvrList: []              
+          }
+        }
+        saveData(newNode);
+        
+        //icon 저장
+        newId = getNewId('markerIcon');
+        newNode = {
+          id: newId,
+          options: {
+            iconUrl: "source/marker_icon2.png",
+            size: {
+              x: 25,
+              y: 40
+            },
+            iconAnchor: {
+              x: 12.5,
+              y: 20
+            },
+            actionType: 'linkToPvr',
+            type: "markerIcon",
+            projectId: projectId
+          }
+        };
+        saveData(newNode);
+      }
+    </script>
+  </body>
+  <head>
+    <meta Http-Equiv="Cache-Control" Content="no-cache">
+    <meta Http-Equiv="Pragma" Content="no-cache">
+    <meta Http-Equiv="Expires" Content="0">
+    <meta Http-Equiv="Pragma-directive: no-cache">
+    <meta Http-Equiv="Cache-directive: no-cache">
+  </head>
+</html>

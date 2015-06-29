@@ -1,0 +1,11 @@
+#image
+*.jpg
+*.jpeg
+*.bmp
+
+#database
+*.sql
+
+#project
+project/*
+
